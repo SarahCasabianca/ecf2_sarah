@@ -16,7 +16,7 @@ return [
     'host' => 'localhost',
 
     // Nom de la base de données
-    'dbname' => 'sport_2000',
+    'dbname' => 'ecf2_sarah',
 
     // Nom d'utilisateur MySQL
     'username' => 'root',
