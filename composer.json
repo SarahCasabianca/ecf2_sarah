@@ -1,0 +1,16 @@
+{
+    "name": "afpa/gestion",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Afpa\\Gestion\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "SarahCasabianca",
+            "email": "sarah.casabianca@gmail.com"
+        }
+    ],
+    "require": {}
+}
