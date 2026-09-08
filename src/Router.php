@@ -85,6 +85,26 @@ class Router
         ];
     }
 
+    public static function getProtectedPages(): array
+    {
+
+        return [
+            'interns',
+            'add-intern',
+            'add-intern-post',
+            'edit-intern',
+            'edit-intern-post',
+            'delete-intern-post',
+            'absences',
+            'add-absence',
+            'add-absence-post',
+            'edit-absence',
+            'edit-absence-post',
+            'delete-absence-post',
+        ];
+
+    }
+
     /**
      * Résout une route sans l'exécuter
      *
@@ -185,6 +205,12 @@ class Router
         if ($route === null) {
             $this->notFound();
             return;
+        }
+
+        // Nouvelle vérification : la page est-elle protégée, et l'admin est-il connecté ?
+        if (in_array($page, self::getProtectedPages()) && !isset($_SESSION['is_admin'])) {
+            header('Location: index.php?page=login');
+            exit;
         }
 
         // Mappe les noms de contrôleurs vers les instances

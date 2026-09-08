@@ -16,6 +16,8 @@
  * - Permet l'utilisation d'URLs propres (SEO-friendly)
  */
 
+session_start();
+
 // Charge la configuration générale (session, constantes, etc.)
 /// require_once __DIR__ . '/../config/config.php';
 

@@ -35,7 +35,6 @@ class Intern
 
         return $stmt->fetch();
 
-
     }
 
     public function create(string $name, string $surname, string $birthdate): void
@@ -53,6 +52,15 @@ class Intern
         $query = "UPDATE intern SET intern_name = ?, intern_surname = ?, intern_birthdate = ? WHERE intern_id = ?";
         $stmt = $this->db->prepare($query);
         $stmt->execute([$name, $surname, $birthdate, $id]);
+
+    }
+
+    public function delete(int $id): void
+    {
+
+        $query = "DELETE FROM intern WHERE intern_id = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([$id]);
 
     }
 

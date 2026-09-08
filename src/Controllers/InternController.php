@@ -91,7 +91,21 @@ class InternController {
 
     public function delete(int $id) : void 
     {
-        echo "Méthode delete appelée.";
+
+        try {
+
+            $intern = new Intern();
+            $intern->delete($id);
+
+            header('Location: index.php?page=home');
+            exit;
+
+        } catch (\PDOException $e) {
+
+            echo "Impossible de supprimer le stagiaire, il reste des absences enregistrées.";
+
+        }
+
     }
 
 }
