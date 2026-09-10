@@ -37,21 +37,21 @@ class Intern
 
     }
 
-    public function create(string $name, string $surname, string $birthdate): void
+    public function create(string $name, string $surname, string $birthdate, ?string $photoFilename): void
     {
 
-        $query = "INSERT INTO intern (intern_name, intern_surname, intern_birthdate) VALUES (?, ?, ?)";
+        $query = "INSERT INTO intern (intern_name, intern_surname, intern_birthdate, intern_photo) VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($query);
-        $stmt->execute([$name, $surname, $birthdate]);
+        $stmt->execute([$name, $surname, $birthdate, $photoFilename]);
 
     }
 
-    public function update(string $name, string $surname, string $birthdate, int $id): void
+    public function update(string $name, string $surname, string $birthdate, int $id, ?string $photoFilename): void
     {
 
-        $query = "UPDATE intern SET intern_name = ?, intern_surname = ?, intern_birthdate = ? WHERE intern_id = ?";
+        $query = "UPDATE intern SET intern_name = ?, intern_surname = ?, intern_birthdate = ?, intern_photo = ? WHERE intern_id = ?";
         $stmt = $this->db->prepare($query);
-        $stmt->execute([$name, $surname, $birthdate, $id]);
+        $stmt->execute([$name, $surname, $birthdate, $photoFilename, $id]);
 
     }
 

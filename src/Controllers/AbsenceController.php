@@ -6,15 +6,14 @@ use Afpa\Gestion\Models\Absence;
 use Afpa\Gestion\Models\Reason;
 use Afpa\Gestion\Models\Intern;
 
-class AbsenceController {
+class AbsenceController extends Controller {
 
     public function stats() : void 
     {
         $absence = new Absence();
         $rankings = $absence->countAllPerIntern();
 
-        require __DIR__ . '/../Views/absence/stats.php';
-
+        $this->render('absence/stats', ['rankings' => $rankings]);
     }
 
     public function index() : void 
@@ -22,7 +21,7 @@ class AbsenceController {
         $absence = new Absence();
         $absences = $absence->getAll();
 
-        require __DIR__ . '/../Views/absence/index.php';
+        $this->render('absence/index', ['absences' => $absences]);
     }
 
     public function create() : void 
@@ -33,11 +32,17 @@ class AbsenceController {
         $intern = new Intern();
         $interns = $intern->getAll();
 
-        require __DIR__ . '/../Views/absence/create.php';
+        $this->render('absence/create', ['reasons' => $reasons, 'interns' => $interns]);
     }
 
     public function store() : void 
     {
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: index.php?page=home');
+            exit;
+        }
+
         $postData = $_POST;
 
         if (
@@ -48,17 +53,35 @@ class AbsenceController {
             header('Location: index.php?page=add-absence');
             exit;
         }
-        
+
         $date = $postData['absence_date'];
-        $document = null;
         $reasonId = (int) $postData['reason_id'];
         $internId = (int) $postData['intern_id'];
 
+        $documentFilename = null;
+
+        if ($_FILES['absence_document']['error'] !== UPLOAD_ERR_NO_FILE) {
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $realMimeType = finfo_file($finfo, $_FILES['absence_document']['tmp_name']);
+            finfo_close($finfo);
+
+            if ($realMimeType !== 'application/pdf') {
+                header('Location: index.php?page=add-absence');
+                exit;
+            }
+
+            $documentFilename = uniqid('absence_', true) . '.pdf';
+
+            move_uploaded_file($_FILES['absence_document']['tmp_name'], __DIR__ . '/../../public/assets/documents/' . $documentFilename);
+        }
+
         $absence = new Absence();
-        $absence->create($date, $document, $reasonId, $internId);
+        $absence->create($date, $documentFilename, $reasonId, $internId);
 
         header('Location: index.php?page=home');
         exit;
+
     }
 
     public function edit(int $id) : void 
@@ -72,13 +95,18 @@ class AbsenceController {
         $intern = new Intern();
         $interns = $intern->getAll();
         
-        require __DIR__ . '/../Views/absence/edit.php';
+        $this->render('absence/edit', ['absence' => $absence, 'reasons' => $reasons, 'interns' => $interns]);
     }
 
     public function update(int $id) : void 
     {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: index.php?page=home');
+            exit;
+        }  
+    
         $postData = $_POST;
-
+    
         if (
             empty($postData['absence_date']) ||
             empty($postData['reason_id']) ||
@@ -89,19 +117,44 @@ class AbsenceController {
         }
         
         $date = $postData['absence_date'];
-        $document = null;
         $reasonId = (int) $postData['reason_id'];
         $internId = (int) $postData['intern_id'];
-
+    
         $absence = new Absence();
-        $absence->update($date, $document, $reasonId, $internId, $id);
-
+    
+        $currentAbsence = $absence->getById($id);
+        $documentFilename = $currentAbsence['absence_document'];
+    
+        if ($_FILES['absence_document']['error'] !== UPLOAD_ERR_NO_FILE) {
+    
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $realMimeType = finfo_file($finfo, $_FILES['absence_document']['tmp_name']);
+            finfo_close($finfo);
+    
+            if ($realMimeType !== 'application/pdf') {
+                header('Location: index.php?page=edit-absence&id=' . $id);
+                exit;
+            }
+    
+            $documentFilename = uniqid('absence_', true) . '.pdf';
+    
+            move_uploaded_file($_FILES['absence_document']['tmp_name'], __DIR__ . '/../../public/assets/documents/' . $documentFilename);
+        }
+    
+        $absence->update($date, $documentFilename, $reasonId, $internId, $id);
+    
         header('Location: index.php?page=home');
         exit;
     }
 
     public function delete(int $id) : void 
     {
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: index.php?page=home');
+            exit;
+        }
+
         $absence = new Absence();
         $absence->delete($id);
 

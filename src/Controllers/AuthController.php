@@ -4,11 +4,11 @@ namespace Afpa\Gestion\Controllers;
 
 use Afpa\Gestion\Models\Admin;
 
-class AuthController {
+class AuthController extends Controller {
 
     public function showLoginForm() : void 
     {
-        require __DIR__ . '/../Views/auth/login.php';
+        $this->render('auth/login');
     }
 
     public function login() : void 
@@ -22,7 +22,6 @@ class AuthController {
 
         if ($adminData === false || !password_verify($password, $adminData['admin_password_hash']))
         { 
-
             header('Location: index.php?page=login');
             exit;
         }
@@ -30,18 +29,15 @@ class AuthController {
         $_SESSION['is_admin'] = true;
         header('Location: index.php?page=home');
         exit;
-
     }
 
     public function logout() : void 
     {
-
         $_SESSION = [];
         session_destroy();
 
         header('Location: index.php?page=home');
         exit;
-
     }
 
 }

@@ -12,12 +12,11 @@ use Afpa\Gestion\Controllers\AbsenceController;
  * Le Router est responsable de :
  * - Analyser l'URL demandée par l'utilisateur
  * - Déterminer quelle action du contrôleur doit être exécutée
- * - Extraire les paramètres de l'URL (comme l'ID d'un article)
+ * - Extraire les paramètres de l'URL (comme l'ID d'un stagiaire ou d'une absence)
  * - Appeler la méthode appropriée du contrôleur
  *
- * Ce système remplace l'ancien système avec des fichiers PHP séparés pour chaque page.
- * Maintenant, tout passe par un point d'entrée unique (index.php) et le Router
- * décide quelle action exécuter.
+ * Tout passe par un point d'entrée unique (public/index.php), et le Router
+ * décide quelle action exécuter en fonction du paramètre GET 'page'.
  *
  * La logique de résolution des routes (resolveRoute) est séparée de l'exécution
  * (dispatch) pour permettre de tester le routing sans instancier les contrôleurs.
@@ -25,17 +24,17 @@ use Afpa\Gestion\Controllers\AbsenceController;
 class Router
 {
     /**
-     * Instance du contrôleur d'articles
+     * Instance du contrôleur d'authentification
      */
     private AuthController $authController;
 
     /**
-     * Instance du contrôleur d'authentification
+     * Instance du contrôleur de gestion des stagiaires
      */
     private InternController $internController;
 
     /**
-     * Instance du contrôleur d'inscription
+     * Instance du contrôleur de gestion des absences
      */
     private AbsenceController $absenceController;
 
@@ -66,7 +65,6 @@ class Router
     {
         return [
             'home',
-            'stats',
             'login',
             'loginpost',
             'logout',
@@ -85,9 +83,16 @@ class Router
         ];
     }
 
+    /**
+     * Retourne la liste des pages réservées à l'admin connecté
+     *
+     * Toute page listée ici nécessite que $_SESSION['is_admin'] soit défini,
+     * sinon l'utilisateur est redirigé vers le formulaire de connexion.
+     *
+     * @return array Liste des identifiants de pages protégées
+     */
     public static function getProtectedPages(): array
     {
-
         return [
             'interns',
             'add-intern',
@@ -102,7 +107,6 @@ class Router
             'edit-absence-post',
             'delete-absence-post',
         ];
-
     }
 
     /**
@@ -113,9 +117,9 @@ class Router
      *
      * Cette séparation entre résolution et exécution permet :
      * - De tester la logique de routing sans base de données ni contrôleurs
-     * - De vérifier les routes dans d'autres contextes (génération de sitemap, etc.)
+     * - De vérifier les routes dans d'autres contextes
      *
-     * @param string $page Le nom de la page demandée (ex: 'home', 'articles', 'login')
+     * @param string $page Le nom de la page demandée (ex: 'home', 'interns', 'login')
      * @param array $params Paramètres de la requête (ex: ['id' => '123'])
      * @return array|null Tableau ['controller' => ..., 'action' => ..., 'params' => [...]] ou null si 404
      */
@@ -129,7 +133,6 @@ class Router
         // Table de routage : associe chaque page à son contrôleur et son action
         $routes = [
             'home'               => ['controller' => 'intern',  'action' => 'home'],
-            'stats'              => ['controller' => 'absence', 'action' => 'stats'],
 
             'login'              => ['controller' => 'auth',    'action' => 'showLoginForm'],
             'loginpost'          => ['controller' => 'auth',    'action' => 'login'],
@@ -157,7 +160,7 @@ class Router
         $route = $routes[$page];
         $route['params'] = [];
 
-        // La page 'edit' nécessite un ID valide
+        // Ces pages agissent sur un stagiaire ou une absence précis : un ID valide est requis
         if ($page === 'edit-intern' || $page === 'edit-absence' || $page === 'edit-intern-post' || $page === 'delete-absence-post' || $page === 'delete-intern-post' || $page === 'edit-absence-post') {
             if (isset($params['id']) && is_numeric($params['id'])) {
                 $route['params']['id'] = (int) $params['id'];
@@ -175,27 +178,23 @@ class Router
      * Cette méthode analyse les paramètres GET de l'URL pour déterminer
      * quelle page afficher et quelle action exécuter.
      *
-     * Utilise resolveRoute() pour déterminer la route, puis exécute
-     * l'action correspondante sur le bon contrôleur.
+     * Utilise resolveRoute() pour déterminer la route, vérifie ensuite si la page
+     * est protégée et si l'admin est connecté, puis exécute l'action correspondante
+     * sur le bon contrôleur.
      *
      * Exemples d'URLs gérées :
-     * - home.html => page d'accueil
-     * - articles/123-titre.html => affichage d'un article
-     * - add.html => formulaire d'ajout
-     * - addpost.html => traitement du formulaire d'ajout
-     * - edit.html?id=123 => formulaire de modification
-     * - editpost.html => traitement du formulaire de modification
-     * - deletepost.html => traitement de la suppression
-     * - login.html => formulaire de connexion
-     * - loginpost.html => traitement de la connexion
-     * - logout.html => déconnexion
-     * - register.html => formulaire d'inscription
-     * - registerpost.html => traitement de l'inscription
-     * - tests.html => page d'exécution des tests PHPUnit
+     * - ?page=home => page d'accueil (trombinoscope public)
+     * - ?page=stats => statistiques publiques
+     * - ?page=login / ?page=loginpost / ?page=logout => authentification admin
+     * - ?page=interns => liste admin des stagiaires
+     * - ?page=add-intern / ?page=add-intern-post => ajout d'un stagiaire
+     * - ?page=edit-intern&id=3 / ?page=edit-intern-post&id=3 => modification d'un stagiaire
+     * - ?page=delete-intern-post&id=3 => suppression d'un stagiaire
+     * - (mêmes routes en version 'absence' pour la gestion des absences)
      */
     public function dispatch(): void
     {
-        // Récupère le paramètre 'page' de l'URL (défini par les règles .htaccess)
+        // Récupère le paramètre 'page' de l'URL
         $page = $_GET['page'] ?? 'home';
 
         // Résout la route (quel contrôleur et quelle action)
@@ -207,7 +206,7 @@ class Router
             return;
         }
 
-        // Nouvelle vérification : la page est-elle protégée, et l'admin est-il connecté ?
+        // Vérifie si la page est protégée et si l'admin est connecté
         if (in_array($page, self::getProtectedPages()) && !isset($_SESSION['is_admin'])) {
             header('Location: index.php?page=login');
             exit;
@@ -216,7 +215,7 @@ class Router
         // Mappe les noms de contrôleurs vers les instances
         $controllers = [
             'intern'  => $this->internController,
-            'auth'     => $this->authController,
+            'auth'    => $this->authController,
             'absence' => $this->absenceController,
         ];
 
@@ -224,7 +223,7 @@ class Router
         $controller = $controllers[$route['controller']];
         $action = $route['action'];
 
-        // Appelle l'action avec les paramètres (ex: show(123))
+        // Appelle l'action avec les paramètres (ex: update(3))
         if (!empty($route['params'])) {
             $controller->$action(...array_values($route['params']));
         } else {
