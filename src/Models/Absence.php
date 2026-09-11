@@ -94,15 +94,15 @@ class Absence
 
     }
 
-    public function GetInternsRed(): array
+    public function getInternsRed(): array
     {
-
+        
         $query = "SELECT intern_id, COUNT(*) AS nb
-                FROM absence
-                JOIN reason ON absence.reason_id = reason.reason_id
-                WHERE reason.reason_name = 'sans motif'
-                GROUP BY intern_id
-                HAVING COUNT(*) > 5";
+            FROM absence
+            JOIN reason ON absence.reason_id = reason.reason_id
+            WHERE reason.reason_name = 'sans motif'
+            GROUP BY intern_id
+            HAVING COUNT(*) > 5";
         $stmt = $this->db->query($query);
         return $stmt->fetchAll();
 

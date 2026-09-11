@@ -1,18 +1,29 @@
+<div class="container">
 
-<div class="stats">
+    <h1 class="mb-4">Classement des absences</h1>
 
-    <?php foreach ($rankings as $ranking): ?>
-
-        <?php $loss = round($ranking['nb_absences'] * (712 / 21), 2); ?>
-
-        <div class="carte-stagiaire">
-
-            <p><?= htmlspecialchars($ranking['intern_name']) ?> <?=  htmlspecialchars($ranking['intern_surname']) ?></p>
-            <p>Absences : <?=  $ranking['nb_absences'] ?></p>
-            <p>Perte estimée : <?= $loss ?></p>
-            
-        </div>
-
-    <?php endforeach; ?>
+    <div class="card">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Stagiaire</th>
+                    <th>Nombre d'absences</th>
+                    <th>Perte estimée</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($rankings as $i => $ranking): ?>
+                    <?php $loss = round($ranking['nb_absences'] * (712 / 21), 2); ?>
+                    <tr>
+                        <td><?= $i + 1 ?></td>
+                        <td><?= htmlspecialchars($ranking['intern_name']) ?> <?= htmlspecialchars($ranking['intern_surname']) ?></td>
+                        <td><span class="badge bg-secondary"><?= $ranking['nb_absences'] ?></span></td>
+                        <td><?= $loss ?> €</td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 
 </div>
