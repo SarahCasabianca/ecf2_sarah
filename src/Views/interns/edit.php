@@ -29,7 +29,7 @@
                         <div class="mb-3">
                             <label for="intern_photo" class="form-label">Photo du stagiaire</label>
                             <input type="file" class="form-control" id="intern_photo" name="intern_photo" accept=".jpg,.jpeg,.png,.webp">
-                            <?php if (!empty($intern['intern_photo'])): ?>
+                            <?php if (!empty($intern['intern_photo'])) : ?>
                                 <div class="form-text">Photo actuelle : <?= htmlspecialchars($intern['intern_photo']) ?> (laisser vide pour la conserver)</div>
                             <?php endif; ?>
                         </div>

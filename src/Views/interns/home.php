@@ -3,7 +3,7 @@
     <h1 class="mb-4">Trombinoscope</h1>
 
     <div class="row g-4">
-        <?php foreach ($interns as $intern): ?>
+        <?php foreach ($interns as $intern) : ?>
             <div class="col-6 col-md-3">
                 <div class="card h-100">
                     <img src="/ecf2_sarah/public/assets/img/<?= htmlspecialchars($intern['intern_photo'] ?? 'placeholder.webp') ?>"

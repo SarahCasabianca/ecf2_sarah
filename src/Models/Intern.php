@@ -5,9 +5,8 @@ namespace Afpa\Gestion\Models;
 use Afpa\Gestion\Database;
 use PDO;
 
-class Intern 
+class Intern
 {
-
     private PDO $db;
 
     public function __construct(?PDO $db = null)
@@ -22,7 +21,6 @@ class Intern
         $stmt = $this->db->query($query);
 
         return $stmt->fetchAll();
-
     }
 
     public function getById(int $id): array|false
@@ -34,7 +32,6 @@ class Intern
         $stmt->execute();
 
         return $stmt->fetch();
-
     }
 
     public function create(string $name, string $surname, string $birthdate, ?string $photoFilename): void
@@ -43,7 +40,6 @@ class Intern
         $query = "INSERT INTO intern (intern_name, intern_surname, intern_birthdate, intern_photo) VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($query);
         $stmt->execute([$name, $surname, $birthdate, $photoFilename]);
-
     }
 
     public function update(string $name, string $surname, string $birthdate, int $id, ?string $photoFilename): void
@@ -52,7 +48,6 @@ class Intern
         $query = "UPDATE intern SET intern_name = ?, intern_surname = ?, intern_birthdate = ?, intern_photo = ? WHERE intern_id = ?";
         $stmt = $this->db->prepare($query);
         $stmt->execute([$name, $surname, $birthdate, $photoFilename, $id]);
-
     }
 
     public function delete(int $id): void
@@ -61,7 +56,5 @@ class Intern
         $query = "DELETE FROM intern WHERE intern_id = :id";
         $stmt = $this->db->prepare($query);
         $stmt->execute([$id]);
-
     }
-
 }

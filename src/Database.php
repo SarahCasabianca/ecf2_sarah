@@ -18,7 +18,6 @@ use PDOException;
  */
 class Database
 {
-
     private static ?Database $instance = null;
 
     private ?PDO $connection = null;

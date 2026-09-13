@@ -5,9 +5,8 @@ namespace Afpa\Gestion\Models;
 use Afpa\Gestion\Database;
 use PDO;
 
-class Reason 
+class Reason
 {
-
     private PDO $db;
 
     public function __construct(?PDO $db = null)
@@ -22,5 +21,4 @@ class Reason
 
         return $stmt->fetchAll();
     }
-
 }

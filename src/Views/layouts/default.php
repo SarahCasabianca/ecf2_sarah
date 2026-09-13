@@ -12,12 +12,11 @@
         <a class="navbar-brand" href="index.php?page=home">Gestion Absences AFPA</a>
         <div class="d-flex gap-3">
             <a class="nav-link text-white" href="index.php?page=home">Accueil</a>
-            <a class="nav-link text-white" href="index.php?page=stats">Stats</a>
-            <?php if (isset($_SESSION['is_admin'])): ?>
+            <?php if (isset($_SESSION['is_admin'])) : ?>
                 <a class="nav-link text-white" href="index.php?page=interns">Stagiaires</a>
                 <a class="nav-link text-white" href="index.php?page=absences">Absences</a>
                 <a class="nav-link text-white" href="index.php?page=logout">Déconnexion</a>
-            <?php else: ?>
+            <?php else : ?>
                 <a class="nav-link text-white" href="index.php?page=login">Connexion admin</a>
             <?php endif; ?>
         </div>
@@ -46,7 +45,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($rankings as $i => $ranking): ?>
+                        <?php foreach ($rankings as $i => $ranking) : ?>
                             <?php $loss = round($ranking['nb_absences'] * (712 / 21), 2); ?>
                             <tr>
                                 <td><?= $i + 1 ?></td>

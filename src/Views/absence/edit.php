@@ -17,7 +17,7 @@
                         <div class="mb-3">
                             <label for="reason_id" class="form-label">Raison</label>
                             <select name="reason_id" id="reason_id" class="form-select" required>
-                                <?php foreach ($reasons as $reason): ?>
+                                <?php foreach ($reasons as $reason) : ?>
                                     <option value="<?= htmlspecialchars($reason['reason_id']) ?>"
                                         <?= $reason['reason_id'] == $absence['reason_id'] ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($reason['reason_name']) ?>
@@ -29,7 +29,7 @@
                         <div class="mb-3">
                             <label for="intern_id" class="form-label">Stagiaire</label>
                             <select name="intern_id" id="intern_id" class="form-select" required>
-                                <?php foreach ($interns as $intern): ?>
+                                <?php foreach ($interns as $intern) : ?>
                                     <option value="<?= htmlspecialchars($intern['intern_id']) ?>"
                                         <?= $intern['intern_id'] == $absence['intern_id'] ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($intern['intern_name']) . ' ' . htmlspecialchars($intern['intern_surname']) ?>
@@ -41,7 +41,7 @@
                         <div class="mb-3">
                             <label for="absence_document" class="form-label">Justificatif</label>
                             <input type="file" class="form-control" id="absence_document" name="absence_document" accept=".pdf">
-                            <?php if (!empty($absence['absence_document'])): ?>
+                            <?php if (!empty($absence['absence_document'])) : ?>
                                 <div class="form-text">Justificatif actuel : <?= htmlspecialchars($absence['absence_document']) ?> (laisser vide pour le conserver)</div>
                             <?php endif; ?>
                         </div>                        

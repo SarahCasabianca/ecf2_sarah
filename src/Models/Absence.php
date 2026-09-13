@@ -5,9 +5,8 @@ namespace Afpa\Gestion\Models;
 use Afpa\Gestion\Database;
 use PDO;
 
-class Absence 
+class Absence
 {
-
     private PDO $db;
 
     public function __construct(?PDO $db = null)
@@ -75,10 +74,10 @@ class Absence
         JOIN absence ON absence.intern_id = intern.intern_id
         GROUP BY intern.intern_id
         ORDER BY nb_absences DESC";
-        
+
         $stmt = $this->db->query($query);
         return $stmt->fetchAll();
-}
+    }
 
     public function countByReasonPerIntern(string $reasonName): array
     {
@@ -91,12 +90,11 @@ class Absence
         $stmt = $this->db->prepare($query);
         $stmt->execute([$reasonName]);
         return $stmt->fetchAll();
-
     }
 
     public function getInternsRed(): array
     {
-        
+
         $query = "SELECT intern_id, COUNT(*) AS nb
             FROM absence
             JOIN reason ON absence.reason_id = reason.reason_id
@@ -105,7 +103,5 @@ class Absence
             HAVING COUNT(*) > 5";
         $stmt = $this->db->query($query);
         return $stmt->fetchAll();
-
     }
-
 }

@@ -6,7 +6,7 @@
     </div>
 
     <div class="row g-4">
-        <?php foreach ($interns as $intern): ?>
+        <?php foreach ($interns as $intern) : ?>
             <?php $isRed = in_array($intern['intern_id'], $redIds); ?>
             <div class="col-6 col-md-3">
                 <div class="card h-100 <?= $isRed ? 'border-danger border-2' : '' ?>">

@@ -6,25 +6,19 @@ use Afpa\Gestion\Models\Absence;
 use Afpa\Gestion\Models\Reason;
 use Afpa\Gestion\Models\Intern;
 
-class AbsenceController extends Controller {
-
-    public function stats() : void 
-    {
-        $absence = new Absence();
-        $rankings = $absence->countAllPerIntern();
-
-        $this->render('absence/stats', ['rankings' => $rankings]);
-    }
-
-    public function index() : void 
+class AbsenceController extends Controller
+{
+    public function index(): void
     {
         $absence = new Absence();
         $absences = $absence->getAll();
 
-        $this->render('absence/index', ['absences' => $absences]);
+        $redIds = array_column($absence->getInternsRed(), 'intern_id');
+
+        $this->render('absence/index', ['absences' => $absences, 'redIds' => $redIds]);
     }
 
-    public function create() : void 
+    public function create(): void
     {
         $reason = new Reason();
         $reasons = $reason->getAll();
@@ -35,9 +29,9 @@ class AbsenceController extends Controller {
         $this->render('absence/create', ['reasons' => $reasons, 'interns' => $interns]);
     }
 
-    public function store() : void 
+    public function store(): void
     {
-        
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: index.php?page=home');
             exit;
@@ -61,7 +55,6 @@ class AbsenceController extends Controller {
         $documentFilename = null;
 
         if ($_FILES['absence_document']['error'] !== UPLOAD_ERR_NO_FILE) {
-
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $realMimeType = finfo_file($finfo, $_FILES['absence_document']['tmp_name']);
             finfo_close($finfo);
@@ -81,10 +74,9 @@ class AbsenceController extends Controller {
 
         header('Location: index.php?page=home');
         exit;
-
     }
 
-    public function edit(int $id) : void 
+    public function edit(int $id): void
     {
         $absences = new Absence();
         $absence = $absences->getById($id);
@@ -94,19 +86,19 @@ class AbsenceController extends Controller {
 
         $intern = new Intern();
         $interns = $intern->getAll();
-        
+
         $this->render('absence/edit', ['absence' => $absence, 'reasons' => $reasons, 'interns' => $interns]);
     }
 
-    public function update(int $id) : void 
+    public function update(int $id): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: index.php?page=home');
             exit;
-        }  
-    
+        }
+
         $postData = $_POST;
-    
+
         if (
             empty($postData['absence_date']) ||
             empty($postData['reason_id']) ||
@@ -115,39 +107,38 @@ class AbsenceController extends Controller {
             header('Location: index.php?page=edit-absence&id=' . $id);
             exit;
         }
-        
+
         $date = $postData['absence_date'];
         $reasonId = (int) $postData['reason_id'];
         $internId = (int) $postData['intern_id'];
-    
+
         $absence = new Absence();
-    
+
         $currentAbsence = $absence->getById($id);
         $documentFilename = $currentAbsence['absence_document'];
-    
+
         if ($_FILES['absence_document']['error'] !== UPLOAD_ERR_NO_FILE) {
-    
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $realMimeType = finfo_file($finfo, $_FILES['absence_document']['tmp_name']);
             finfo_close($finfo);
-    
+
             if ($realMimeType !== 'application/pdf') {
                 header('Location: index.php?page=edit-absence&id=' . $id);
                 exit;
             }
-    
+
             $documentFilename = uniqid('absence_', true) . '.pdf';
-    
+
             move_uploaded_file($_FILES['absence_document']['tmp_name'], __DIR__ . '/../../public/assets/documents/' . $documentFilename);
         }
-    
+
         $absence->update($date, $documentFilename, $reasonId, $internId, $id);
-    
+
         header('Location: index.php?page=home');
         exit;
     }
 
-    public function delete(int $id) : void 
+    public function delete(int $id): void
     {
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -161,5 +152,4 @@ class AbsenceController extends Controller {
         header('Location: index.php?page=home');
         exit;
     }
-
 }

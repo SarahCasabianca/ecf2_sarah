@@ -16,10 +16,13 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($absences as $absence): ?>
+                <?php foreach ($absences as $absence) : ?>
+                    <?php $isRed = in_array($absence['intern_id'], $redIds); ?>
                     <tr>
                         <td><?= htmlspecialchars($absence['absence_date']) ?></td>
-                        <td><?= htmlspecialchars($absence['intern_name']) . ' ' . htmlspecialchars($absence['intern_surname']) ?></td>
+                        <td class="<?= $isRed ? 'text-danger fw-bold' : '' ?>">
+                            <?= htmlspecialchars($absence['intern_name']) . ' ' . htmlspecialchars($absence['intern_surname']) ?>
+                        </td>
                         <td><?= htmlspecialchars($absence['reason_name']) ?></td>
                         <td class="text-end">
                             <a href="index.php?page=edit-absence&id=<?= $absence['absence_id'] ?>" class="btn btn-sm btn-outline-secondary">Modifier</a>

@@ -5,9 +5,8 @@ namespace Afpa\Gestion\Models;
 use Afpa\Gestion\Database;
 use PDO;
 
-class Admin 
+class Admin
 {
-
     private PDO $db;
 
     public function __construct(?PDO $db = null)
@@ -23,8 +22,5 @@ class Admin
         $stmt->execute([$pseudo]);
 
         return $stmt->fetch();
-
-
     }
-
 }

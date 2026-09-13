@@ -16,7 +16,7 @@
                         <div class="mb-3">
                             <label for="reason_id" class="form-label">Raison</label>
                             <select name="reason_id" id="reason_id" class="form-select" required>
-                                <?php foreach ($reasons as $reason): ?>
+                                <?php foreach ($reasons as $reason) : ?>
                                     <option value="<?= htmlspecialchars($reason['reason_id']) ?>">
                                         <?= htmlspecialchars($reason['reason_name']) ?>
                                     </option>
@@ -27,7 +27,7 @@
                         <div class="mb-3">
                             <label for="intern_id" class="form-label">Stagiaire</label>
                             <select name="intern_id" id="intern_id" class="form-select" required>
-                                <?php foreach ($interns as $intern): ?>
+                                <?php foreach ($interns as $intern) : ?>
                                     <option value="<?= htmlspecialchars($intern['intern_id']) ?>">
                                         <?= htmlspecialchars($intern['intern_name']) . ' ' . htmlspecialchars($intern['intern_surname']) ?>
                                     </option>
